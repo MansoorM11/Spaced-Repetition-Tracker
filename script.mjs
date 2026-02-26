@@ -35,10 +35,11 @@ function changeUserSelection() {
     message.textContent = "Please select a user";
     return;
   }
-  console.log(selectedUser);
+  renderAgenda(selectedUser);
 }
 
 topicForm.addEventListener("submit", handleFormSubmit);
+
 function handleFormSubmit(event) {
   event.preventDefault();
 
@@ -58,9 +59,83 @@ function handleFormSubmit(event) {
     message.textContent = "Please fill in all fields.";
     return;
   }
+
+  const revisionDates = calculateRevisionDates(startDate);
+  const revisionObject = revisionDates.map((date) => ({
+    topic: topicName,
+    date: date,
+  }));
+
+  addData(selectedUser, revisionObject);
+  renderAgenda(selectedUser);
+}
+
+export function calculateRevisionDates(startDateString) {
+  const baseDate = new Date(startDateString + "T00:00:00Z");
+  const revisionDates = [];
+
+  function addDays(days) {
+    const date = new Date(baseDate);
+    date.setUTCDate(date.getUTCDate() + days);
+    return date;
+  }
+
+  function addMonths(months) {
+    const date = new Date(baseDate);
+    date.setUTCMonth(date.getUTCMonth() + months);
+    return date;
+  }
+
+  revisionDates.push(addDays(7));
+  revisionDates.push(addMonths(1));
+  revisionDates.push(addMonths(3));
+  revisionDates.push(addMonths(6));
+  revisionDates.push(addMonths(12));
+
+  return revisionDates.map((date) => date.toISOString().split("T")[0]);
+}
+
+function sortByDate(dateObject) {
+  return dateObject.slice().sort((a, b) => {
+    if (a.date < b.date) return -1;
+    if (a.date > b.date) return 1;
+    return 0;
+  });
+}
+
+function renderAgenda(userId) {
+  agendaList.innerHTML = "";
+  message.textContent = "";
+
+  const storedDate = getData(userId) || [];
+
+  if (storedDate.length === 0) {
+    message.textContent = `No agenda for user ${userId}`;
+    return;
+  }
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const futureRevision = storedDate.filter((item) => {
+    return item.date >= today;
+  });
+
+  if (futureRevision.length === 0) {
+    message.textContent = "No upcoming revision.";
+    return;
+  }
+  const sortedRevision = sortByDate(futureRevision);
+
+  sortedRevision.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = `${item.topic}, ${item.date}`;
+    agendaList.appendChild(li);
+  });
 }
 
 window.onload = function () {
   populateDropDownList();
+  const today = new Date().toISOString().split("T")[0];
+  dateInput.value = today;
   //  document.querySelector("body").innerText = `There are ${users.length} users`;
 };
