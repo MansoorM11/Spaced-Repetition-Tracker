@@ -24,6 +24,20 @@ function populateDropDownList() {
   });
 }
 
+selectUser.addEventListener("change", changeUserSelection);
+
+function changeUserSelection() {
+  const selectedUser = selectUser.value;
+  agendaList.innerHTML = "";
+  message.textContent = "";
+
+  if (!selectedUser) {
+    message.textContent = "Please select a user";
+    return;
+  }
+  console.log(selectedUser);
+}
+
 window.onload = function () {
   populateDropDownList();
   //  document.querySelector("body").innerText = `There are ${users.length} users`;
