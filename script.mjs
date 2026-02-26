@@ -38,6 +38,28 @@ function changeUserSelection() {
   console.log(selectedUser);
 }
 
+topicForm.addEventListener("submit", handleFormSubmit);
+function handleFormSubmit(event) {
+  event.preventDefault();
+
+  const selectedUser = selectUser.value;
+  const topicName = topicInput.value.trim();
+  const startDate = dateInput.value;
+
+  message.textContent = "";
+  agendaList.innerHTML = "";
+
+  if (!selectedUser) {
+    message.textContent = "Please select a user before adding a topic.";
+    return;
+  }
+
+  if (!topicName || !startDate) {
+    message.textContent = "Please fill in all fields.";
+    return;
+  }
+}
+
 window.onload = function () {
   populateDropDownList();
   //  document.querySelector("body").innerText = `There are ${users.length} users`;
