@@ -5,8 +5,26 @@
 // You can't open the index.html file using a file:// URL.
 
 import { getUserIds } from "./common.mjs";
+import { getData, addData, clearData } from "./storage.mjs";
+
+const selectUser = document.getElementById("select-user");
+const topicForm = document.getElementById("topic-form");
+const topicInput = document.getElementById("topic-name");
+const dateInput = document.getElementById("start-date");
+const message = document.getElementById("message");
+const agendaList = document.getElementById("agenda-list");
+
+function populateDropDownList() {
+  const users = getUserIds();
+  users.forEach((userId) => {
+    const option = document.createElement("option");
+    option.value = userId;
+    option.textContent = userId;
+    selectUser.appendChild(option);
+  });
+}
 
 window.onload = function () {
-  const users = getUserIds();
-  document.querySelector("body").innerText = `There are ${users.length} users`;
+  populateDropDownList();
+  //  document.querySelector("body").innerText = `There are ${users.length} users`;
 };
